@@ -47,19 +47,21 @@ other on a LAN and be able to chat in a room.
 
 ```python
 from mesh.node import Node
-from mesh.link import UDPLink
+from mesh.links import UDPLink
 from mesh.programs import Printer
 
-lan = UDPLink('en0', 8080)  # traffic will be sent using UDP-broadcast packets to all machines on your LAN
+lan = UDPLink('en0', 8080) 
+# <en0>    starting...
 
-node1 = Node([lan], 'bob', Program=Printer)  # programs are just threads with a send() and recv() method
+node1 = Node([lan], 'bob', Program=Printer)
 node2 = Node([lan], 'alice', Program=Printer)
-
 (lan.start(), node1.start(), node2.start())
+# <en0>    ready to receive.
+# (None, None, None)
 
-node1.send('hi alice!')
-# node2 gets > 'hi alice!''
-# Printer thread on node2 has its recv() method called with "hi alice!"
+node1.send(b'hi alice!')
+# [alice]  PRINTER  <en0>                          hi alice!
+## Printer thread on node2 has its recv() method called with "hi alice!"
 
 # Next steps: try adding an IRCLink to let them communicate ouside the LAN!
 ```
